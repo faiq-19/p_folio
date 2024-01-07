@@ -1,0 +1,255 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content=""/>
+    <meta name="keywords" content=""/>
+    <title>Profile - {{user_profile.user.username}}</title>
+    <!-- <link rel="icon" href="images/fav.png" type="image/png" sizes="16x16"> -->
+
+    <link rel="stylesheet" href="{% static 'css/main.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/color.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+
+</head>
+<body style="background-image: url('{% static 'images/razer-logo-glowing-blur.png' %}'); background-size: cover; background-attachment: fixed;">
+<div class="theme-layout">
+
+</div>
+
+<section>
+    <div class="feature-photo" >
+        <figure><img src="{% static 'images/Timeline-Griffith.png' %}" alt=""></figure>
+        <form action="/follow" method="POST">
+            {% csrf_token %}
+            <div class="add-btn">
+                <span style="color: white; font-size: 27px; margin-right: device-margin;"><b><u><a href="/">Home</a></u></b></span>
+                {% if user_post_length == 0 %}
+                <span style="color: white; font-size: 27px;"><b>No Posts</b></span>
+                {% elif user_post_length == 1 %}
+                <span style="color: white; font-size: 27px;"><b>{{user_post_length}} Post</b></span>
+                {% else %}
+                <span style="color: white; font-size: 27px;"><b>{{user_post_length}} Posts</b></span>
+                {% endif %}
+                {% if user_followers == 0 or user_followers == 1 %}
+                <span style="color: white; font-size: 27px;"><b>{{user_followers}} Follower</b></span>
+                {% else %}
+                <span style="color: white; font-size: 27px;"><b>{{user_followers}} Followers</b></span>
+                {% endif %}
+                <span style="color: white; font-size: 27px;"><b>{{user_following}} Following</b></span>
+
+                <input type="hidden" value="{{user.username}}" name="follower"/>
+                <input type="hidden" value="{{user_object.username}}" name="user"/>
+
+                {% if user_object.username == user.username %}
+                <a href="/settings" title="" data-ripple="">Account Settings</a>
+                {% else %}
+                <a href="" title="" data-ripple="">
+                    <button type="submit" style="background-color: #ffc0cb; border: #ffc0cb;">
+                        {{button_text}}
+                    </button>
+                </a>
+                {% endif %}
+            </div>
+        </form>
+
+        <div class="container-fluid">
+            <div class="row merged">
+                <div class="col-lg-2 col-sm-3">
+                    <div class="user-avatar">
+                        <figure style="width: 300x; height: 300px;  border-radius: 50%;">
+                            <a href="#">
+                                <img src="{{user_profile.profileimg.url}}" class="header-avatar" alt=""
+                                     style="width: 100%; height: 100%; object-fit: cover;">
+                            </a>
+                            <form class="edit-photo">
+                                <i class="fa fa-camera-retro"></i>
+                                <label class="fileContainer">
+                                    <a href="/settings">Upload Profile Photo</a>
+                                </label>
+                            </form>
+                        </figure>
+                    </div>
+                </div>
+
+                <div class="col-lg-10 col-sm-9">
+                    <div class="timeline-info">
+                        <ul>
+                            <li class="admin-name"><hr>
+                                <h5 style="color: white;white-space: nowrap; width: device-width; font-size: 35px;"><b>@{{user_profile.user.username}}</b>&nbsp;&nbsp;
+                                    <i class="fa fa-check-circle" style="color: #48dbfb;" aria-hidden="true"></i></h5>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section><!-- top area -->
+
+<section >
+    <div class="bio" >
+        <div class="section">
+            <strong>{{user_profile.bio}}</strong>
+        </div>
+
+        <div class="section">
+            <h3>Professional Details</h3>
+            <strong>Field:</strong> {{user_profile.field}}<br>
+            <strong>Position:</strong> {{user_profile.get_position_display}}<br>
+            <strong>Current Workplace:</strong> {{user_profile.current_workplace}}<br>
+            <strong>City:</strong> {{user_profile.city}}<br>
+            <strong>Language:</strong> {{user_profile.language}}<br>
+        </div>
+
+        <div class="section experience">
+            <h3>Experience</h3>
+            {% for experience in user_profile.experiences.all %}
+            <strong>{{experience.job_title}}</strong> - {{experience.duration}}<br>
+            {% endfor %}
+        </div>
+
+        <div class="section skills">
+            <h3>Skills</h3>
+            {% for skill in user_profile.skills.all %}
+            {{skill.skill_name}}<br>
+            {% endfor %}
+        </div>
+
+        <div class="section projects">
+            <h3>Projects</h3>
+            {% for project in user_profile.projects.all %}
+            {{project.project_name}}<br>
+            {% endfor %}
+        </div>
+
+        <div class="section projects">
+            <h3>Education</h3>
+            {% for education in user_profile.educations.all %}
+            <strong>{{education.degree}}</strong> - {{education.university_name}}<br>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="sidebar">
+
+        <div class="gap gray-bg" style="background-image: url('{% static 'images/razer-logo-glowing-blur.png' %}'); background-size: cover; background-attachment: fixed;">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="row" id="page-contents">
+                            <div class="col-lg-3">
+                                <aside class="sidebar static">
+
+
+                                </aside>
+                            </div><!-- sidebar -->
+
+
+                            <div class="col-lg-6">
+                                <div class="central-meta">
+                                    <ul class="photos">
+
+                                        {% for post in user_posts %}
+                                        <li>
+                                            <a class="strip" href="{{post.image.url}}" title=""
+                                               data-strip-group="mygroup" data-strip-group-options="loop: false">
+                                                <img src="{{post.image.url}}" style="height: 250px; width: 300px;"
+                                                     alt=""></a>
+                                        </li>
+                                        {% endfor %}
+
+                                    </ul>
+                                </div><!-- photos -->
+                            </div><!-- centerl meta -->
+                            <div class="col-lg-3">
+                                <aside class="sidebar static">
+
+                                </aside>
+                            </div><!-- sidebar -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .bio {
+        background-color: #f8f8f8;
+        padding: 20px;
+        margin: 55px 0 20px 45px; /* Center the box horizontally */
+        border-radius: 10px;
+        width: 10%; /* Set the width to 50% */
+        height: 50%;
+        max-height: auto;
+        max-width: 300px; /* Add a maximum width to ensure responsiveness */
+    }
+
+    .bio strong {
+        color: #333;
+    }
+
+    .section {
+        border-bottom: 10px solid #ddd;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+    }
+
+    .section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .section h3 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+	section {
+  	display: flex;
+}
+
+.bio {
+   flex: 2;
+   /* Other bio styles */
+}
+
+.sidebar {
+   flex: 3;
+}
+
+.central-meta .photos {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.central-meta .photos li {
+  flex: 1; /* Use flex property to make the items flexible */
+  margin: 1%;
+}
+
+.central-meta img {
+  width: 100%;
+  height: auto;
+  max-width: 100%; /* Ensure images don't exceed their container's width */
+}
+
+</style>
+
+<script data-cfasync="false"
+        src="{% static '../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js' %}"></script>
+<script src="{% static 'js/main.min.js' %}"></script>
+<script src="{% static 'js/script.js' %}"></script>
+
+</body>
+
+
+</html>

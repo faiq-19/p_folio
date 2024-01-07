@@ -1,0 +1,342 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{% static 'assets/images/favicon.png' %}" rel="icon" type="image/png">
+    <title>Settings</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'assets/css/icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/uikit.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/tailwind.css' %}">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title >Your Portfolio</title>
+    <style>
+        .experience-table,
+        .education-table,
+        skills-table,
+        projects-table {
+            width: 205%;
+            max-width: 1000px; /* Adjust the maximum width as needed */
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px auto; /* Adjust the margin as needed */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            word-wrap: break-word; /* Allow long words to break and wrap */
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+        .add-experience,
+        .add-education,
+        .add-skill,
+        .add-project{
+            text-align: center;
+            padding: 15px;
+            background-color: #ee4f93;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .skills-list,
+        .projects-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .skills-list li ,
+        .projects-list li{
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .skills-list input ,
+        .projects-list input{
+            flex: 1;
+            padding: 8px;
+            margin-right: 10px;
+        }
+
+    </style>
+</head>
+
+<body style="background-image: url('{% static 'images/razer-logo-glowing-4k-89.png' %}'); background-size: cover; background-attachment: fixed;">
+
+
+<div class="container m-auto" >
+
+    <h1 class="text-2xl leading-none text-gray-900 tracking-tight mt-3" style="color: white;"><a href="/"><b>{{user.username}}</b> </a>
+        Account Settings </h1>
+    <!--                <ul class="mt-5 -mr-3 flex-nowrap lg:overflow-hidden overflow-x-scroll uk-tab">-->
+    <!--                    <li class="uk-active"><a href="#">General</a></li>-->
+    <!--                    <li><a href="#">Profile</a></li>-->
+    <!--                    <li><a href="#">Privacy</a></li>-->
+    <!--                    <li><a href="#">Notification</a></li>-->
+    <!--                    <li><a href="#">Social links</a></li>-->
+    <!--                    <li><a href="#">Billing</a></li>-->
+    <!--                    <li><a href="#">Security</a></li>-->
+    <!--                </ul>-->
+    <br align="center">
+    <hr>
+
+    <div class="grid lg:grid-cols-3 mt-12 gap-8" >
+        <div>
+            <h4 class="text-xl mb-2" style="color: white;"> <strong>General</strong></h4>
+            <p></p>
+        </div>
+        <div class="bg-white rounded-md lg:shadow-lg shadow col-span-2">
+            <form action="" method="POST" enctype="multipart/form-data" >
+                {% csrf_token %}
+                <div class="grid grid-cols-2 gap-3 lg:p-6 p-4">
+                    <!--                           <div>-->
+                    <!--                               <label for=""> First name</label>-->
+                    <!--                               <input type="text" placeholder="Your name.." class="shadow-none bg-gray-100">-->
+                    <!--                           </div>-->
+                    <!--                           <div>-->
+                    <!--                               <label for=""> Last name</label>-->
+                    <!--                               <input type="text" placeholder="Your name.." class="shadow-none bg-gray-100">-->
+                    <!--                            </div>-->
+                    <div class="col-span-2" >
+                        <label for=""> Profile Picture</label>
+                        <img width="150" height="150" src="{{user_profile.profileimg.url}}"/>
+                        <input type="file" name="image" placeholder="" class="shadow-none bg-gray-100">
+                    </div>
+                    <div class="col-span-2">
+                        <label for="about">About me</label>
+                        <textarea id="bio" name="bio" rows="3"
+                                  class="shadow-none bg-gray-100">{{user_profile.bio}}</textarea>
+                    </div>
+
+                    <div class="education-table">
+                        <table id="educationTable">
+                            <thead>
+                            <tr>
+                                <th>Education</th>
+                                <th>Degree</th>
+                            </tr>
+                            </thead>
+                            <tbody id="educationTableBody">
+                            <!-- Existing rows go here -->
+                            {% for entry in user_profile.educations.all %}
+                            <tr>
+                                <td><input type="text" name="university_name[]" placeholder="Job Title"
+                                           value="{{ entry.university_name }}"></td>
+                                <td><input type="text" name="degree[]" placeholder="Start - End"
+                                           value="{{ entry.degree }}"></td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="add-education" onclick="addEducation()">Add Education</div>
+                    </div>
+
+                    <div class="col-span-2">
+                        <label for=""> Field</label>
+                        <input type="text" name="field" value="{{user_profile.field}}" placeholder=""
+                               class="shadow-none bg-gray-100">
+                    </div>
+
+
+                    <div>
+                        <label for="position"> Position </label>
+                        <select id="position" name="position" class="shadow-none bg-gray-100">
+                            <option value="0" {% if user_profile.position == 0 %}selected{% endif %}>Unemployed</option>
+                            <option value="1" {% if user_profile.position == 1 %}selected{% endif %}>Intern</option>
+                            <option value="2" {% if user_profile.position == 2 %}selected{% endif %}>Employed</option>
+                        </select>
+                    </div>
+
+
+                    <div>
+                        <label for="current_workplace"> Currently working at</label>
+                        <input type="text" name="current_workplace" value="{{user_profile.current_workplace}}"
+                               placeholder="" class="shadow-none bg-gray-100">
+                    </div>
+
+
+                    <!-- Add Skills Section -->
+                    <div class="skills-table">
+                        <h2>Skills</h2>
+                        <ul id="skillsList" class="skills-list">
+                            {% for skill in user_profile.skills.all %}
+                            <li>
+                                <input type="text" name="skills[]" placeholder="Skill" value="{{ skill.skill_name }}">
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <div class="add-skill" onclick="addSkill()">Add Skill</div>
+                    </div>
+
+                    <!-- Add Projects Section -->
+                    <div class="projects-table">
+                        <h2>Projects</h2>
+                        <ul id="projectsList" class="projects-list">
+                            {% for project in user_profile.projects.all %}
+                            <li>
+                                <input type="text" name="projects[]" placeholder="Project"
+                                       value="{{ project.project_name }}">
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <div class="add-project" onclick="addProject()">Add Project</div>
+                    </div>
+
+                    <div>
+                        <label for="">Living City</label>
+                        <input type="text" name="city" value="{{user_profile.city}}" placeholder=""
+                               class="shadow-none bg-gray-100">
+                    </div>
+
+                    <div>
+                        <label for="Language">Language</label>
+                        <input type="text" name="language" value="{{user_profile.language}}" placeholder=""
+                               class="shadow-none bg-gray-100">
+                    </div>
+
+                    {% comment %}
+                    <div class="container m-auto"> {% endcomment %}
+
+                        <!-- Add Experience Section -->
+                        <div class="experience-table">
+                            <table id="experienceTable">
+                                <thead>
+                                <tr>
+                                    <th>Experience</th>
+                                    <th>Job Title</th>
+                                    <th>Duration</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for experience in user_profile.experiences.all %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td><input type="text" name="job_titles[]" placeholder="Job Title"
+                                               value="{{ experience.job_title }}"></td>
+                                    <td><input type="text" name="durations[]" placeholder="Start - End"
+                                               value="{{ experience.duration }}"></td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <div class="add-experience" onclick="addExperience()">Add Experience</div>
+                        </div>
+
+
+                        <script>
+                            function addExperience() {
+                                var table = document.getElementById("experienceTable").getElementsByTagName('tbody')[0];
+
+                                // Check if there are already 5 experiences
+                                if (table.rows.length >= 5) {
+                                    alert("You can only add up to 5 experiences!");
+                                    return;
+                                }
+
+                                var newRow = table.insertRow();
+                                var cell1 = newRow.insertCell(0);
+                                var cell2 = newRow.insertCell(1);
+                                var cell3 = newRow.insertCell(2);
+
+                                // Increment the experience count
+                                var experienceCount = table.rows.length;
+
+                                cell1.innerHTML = experienceCount;
+                                cell2.innerHTML = "<input type='text' name='job_titles[]' placeholder='Job Title'>";
+                                cell3.innerHTML = "<input type='text' name='durations[]' placeholder='Start - End'>";
+                            }
+
+                            function addEducation() {
+                                var tableBody = document.getElementById("educationTableBody");
+
+                                // Check if there are already 5 education entries
+                                if (tableBody.rows.length >= 5) {
+                                    alert("You can only add up to 5 education entries!");
+                                    return;
+                                }
+
+                                var newRow = tableBody.insertRow();
+                                var cell1 = newRow.insertCell(0);
+                                var cell2 = newRow.insertCell(1);
+
+                                cell1.innerHTML = "<input type='text' name='university_name[]' placeholder='University/College'>";
+                                cell2.innerHTML = "<input type='text' name='degree[]' placeholder='Degree/Major'>";
+                            }
+
+
+                            function addSkill() {
+                                var skillsList = document.getElementById("skillsList");
+
+                                // Check if there are already 10 skills
+                                if (skillsList.children.length >= 10) {
+                                    alert("You can only add up to 10 skills!");
+                                    return;
+                                }
+
+                                var newSkill = document.createElement("li");
+                                newSkill.innerHTML = "<input type='text' name='skills[]' placeholder='Skill'>";
+                                skillsList.appendChild(newSkill);
+                            }
+
+                            function addProject() {
+                                var projectsList = document.getElementById("projectsList");
+
+                                // Check if there are already 10 skills
+                                if (projectsList.children.length >= 10) {
+                                    alert("You can only add up to 10 projects!");
+                                    return;
+                                }
+
+                                var newProject = document.createElement("li");
+                                newProject.innerHTML = "<input type='text' name='projects[]' placeholder='Project'>";
+                                projectsList.appendChild(newProject);
+                            }
+                        </script>
+                    </div>
+
+                    <div class="bg-gray-10 p-6 pt-0 flex justify-end space-x-3">
+                        <button class="p-2 px-4 rounded bg-gray-50 text-red-500"><a href="/">Cancel</a></button>
+                        <button type="submit" class="button bg-blue-700"> Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <br>
+
+    </div>
+
+</div>
+
+
+<!-- Scripts
+   ================================================== -->
+<script src="{% static 'assets/js/tippy.all.min.js' %}"></script>
+<script src="{% static 'assets/js/jquery-3.3.1.min.js' %}"></script>
+<script src="{% static 'assets/js/uikit.js' %}"></script>
+<script src="{% static 'assets/js/simplebar.js' %}"></script>
+<script src="{% static 'assets/js/custom.js' %}"></script>
+
+
+<script src="{% static '../../unpkg.com/ionicons%405.2.3/dist/ionicons.js' %}"></script>
+</body>
+
+</html>
